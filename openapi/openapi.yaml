@@ -1,0 +1,214 @@
+openapi: 3.0.1
+info:
+  title: API Proyecto Estudiantes.
+  description: Esta API se encarga de manejar la información de la base de datos del Proyecto Estudiantes.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/api/estudiantes/
+tags:
+  - name: estudiantes
+    description: Este endpoint maneja toda la información relacionada con los Estudiantes.
+
+paths:
+  /:
+    get:
+      tags:
+        - estudiantes
+      summary: Obtiene la lista de todos los estudiantes.
+      responses:
+        200:
+          description: "(OK) Lista de estudiantes obtenida correctamente"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExitoEstudiantesGet'
+        500:
+          $ref: '#/components/responses/ServerError'
+
+    post:
+      tags:
+        - estudiantes
+      summary: Inserta la información de un nuevo estudiante en la base de datos.
+      parameters:
+        - $ref: '#/components/parameters/token'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BodyEstudiantesPost'
+        required: true
+      responses:
+        200:
+          description: "(OK) La información del estudiante se guardó correctamente"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExitoEstudiantesPost'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500:
+          $ref: '#/components/responses/ServerError'
+
+  /{idEstudiante}:
+    get:
+      tags:
+        - estudiantes
+      summary: Obtiene la información de un estudiante por su ID.
+      parameters:
+        - $ref: '#/components/parameters/token'
+        - name: idEstudiante
+          in: path
+          description: Identificador del estudiante a obtener.
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: "(OK) La información del estudiante se obtuvo correctamente"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExitoEstudiantesGet'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500:
+          $ref: '#/components/responses/ServerError'
+
+    put:
+      tags:
+        - estudiantes
+      summary: Actualiza la información de un estudiante existente.
+      parameters:
+        - $ref: '#/components/parameters/token'
+        - name: idEstudiante
+          in: path
+          description: Identificador del estudiante a actualizar.
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BodyEstudiantesPost'
+        required: true
+      responses:
+        200:
+          description: "(OK) El estudiante se actualizó correctamente"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExitoEstudiantesPost'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500:
+          $ref: '#/components/responses/ServerError'
+
+    delete:
+      tags:
+        - estudiantes
+      summary: Elimina un estudiante por su ID.
+      parameters:
+        - $ref: '#/components/parameters/token'
+        - name: idEstudiante
+          in: path
+          description: Identificador del estudiante a eliminar.
+          required: true
+          schema:
+            type: integer
+      responses:
+        204:
+          description: "(No Content) El estudiante fue eliminado correctamente"
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500:
+          $ref: '#/components/responses/ServerError'
+
+components:
+  responses:
+    Unauthorized:
+      description: "(Unauthorized) No hay autorización para llamar al servicio"
+    NotFound:
+      description: "(NotFound) No se encontró la información"
+    BadRequest:
+      description: "(BadRequest) Los datos enviados son incorrectos"
+    ServerError:
+      description: "(ServerError) Error en el servidor"
+
+  parameters:
+    token:
+      name: Authorization
+      in: header
+      description: Token de autenticación.
+      required: true
+      schema:
+        type: string
+
+  schemas:
+    BodyEstudiantesPost:
+      type: object
+      properties:
+        nombre:
+          type: string
+          description: Nombre completo del estudiante.
+        edad:
+          type: integer
+          description: Edad del estudiante.
+        carrera:
+          type: string
+          description: Carrera que está cursando el estudiante.
+        universidad:
+          type: string
+          description: Universidad donde el estudiante realiza sus estudios.
+        promedio:
+          type: boolean
+          description: Promedio del estudiante.
+
+    ExitoEstudiantesPost:
+      type: object
+      properties:
+        respuesta:
+          type: integer
+          enum: [1]
+          description: Bandera que indica si la llamada al servicio fue exitosa.
+        idEstudiante:
+          type: integer
+          example: 222
+          description: ID que le corresponde al estudiante.
+
+    ExitoEstudiantesGet:
+      type: object
+      properties:
+        nombre:
+          type: string
+          description: Nombre completo del estudiante.
+        edad:
+          type: integer
+          description: Edad del estudiante.
+        carrera:
+          type: string
+          description: Carrera que está cursando el estudiante.
+        universidad:
+          type: string
+          description: Universidad donde el estudiante realiza sus estudios.
+        promedio:
+          type: boolean
+          description: Promedio del estudiante.
